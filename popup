@@ -1,0 +1,50 @@
+#!/bin/bash
+
+# Read first arg if its not a flag or empty, otherwise read input
+if [[ "$@" = \-* ]] || [[ $# -eq 0 ]]; then
+	read -t .1 text
+else
+	text=$1
+	shift
+fi
+
+# Exit if text is not set
+[[ -z $text ]] && echo "$(basename $0): No text provided" >&2 && exit 1
+
+# Duration of the popup
+d=3
+
+# Geometry
+h=20
+w=120
+x=10
+y=10
+
+# Default font
+s=12 # Size
+f="DejaVu Sans Mono"
+
+# Calculate the minimum width based on the font and text
+w="$(txtw -f "$f" -s $s " $text ")"
+
+while getopts "d:h:w:x:y:" opt; do
+	case $opt in
+		d) d=$OPTARG;;
+		h) h=$OPTARG;;
+		w) w=$OPTARG;;
+		x) x=$OPTARG;;
+		y) y=$OPTARG;;
+	esac
+done
+
+# Shift out all getopts args
+shift $((OPTIND -1))
+
+# Echo the text for $d seconds and pipe into lemonbar to display the popup
+(echo " $text "; sleep $d) | lemonbar \
+	-B "#$(gtc.sh bg)" \
+	-F "#$(gtc.sh fg)" \
+	-d \
+	-f "$f:pixelsize=$s" \
+	-g ${w}x${h}+${x}+${y} \
+	"$@"

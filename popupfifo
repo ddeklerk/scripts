@@ -1,0 +1,64 @@
+#!/bin/bash
+
+trap cleanup INT TERM QUIT EXIT
+cleanup() {
+	rm -f $POPUP_FIFO
+	exit 1
+}
+
+# Fifo that we'll use to feed the popups
+[ -e "$POPUP_FIFO" ] && rm "$POPUP_FIFO"
+mkfifo "$POPUP_FIFO"
+
+h=20
+y=10
+
+# Usage
+#	pop message pid
+pop() {
+	# Message to display in the popup
+	message=$1
+	# Pid of the previous popup that needs to be killed
+	pid=$2
+
+	if [[ -n $pid ]]; then
+		pkill -P $pid 2> /dev/null
+		wait $pid 2> /dev/null
+	fi
+
+	# Number of already active popups
+	n=$(jobs | grep -ic running)
+	
+	popup "$message" -h $h -y $((y + h * n)) -- -b&
+}
+
+repeat() {
+	[ $2 = "0" ] && exit
+
+	printf "%0.s${1}" $(seq $2)
+}
+
+pad() {
+	echo "$(repeat " " $(( ${2:-4} - ${#1} )) )$1"
+}
+
+# Get the messages from the fifo
+tail -f $POPUP_FIFO | while read -r message; do
+	case $message in
+		\[BL]*)
+			pop "BL  $(bar.sh ${message#*]}) $(pad ${message#*]}%)" $Bpid
+			Bpid=$!
+			;;
+		\[VL]*) # Volume message
+			pop "VOL $(bar.sh ${message#*]}) $(pad ${message#*]}%)" $Vpid
+			Vpid=$!
+			;;
+		\[WM]*)
+			pop "${message#*]}" $Wpid
+			Wpid=$!
+			;;
+		*)
+			pop "$message"
+			;;
+	esac
+done
