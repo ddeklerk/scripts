@@ -1,0 +1,13 @@
+#!/bin/sh
+# gtc - get xrdb color
+
+if [ "$1" = "fg" ]; then
+	xrdb -query | grep "foreground" | awk '{printf $2}' \
+		| cut -z -c 2-7 | tr -d '\000'
+elif [ "$1" = "bg" ]; then
+	xrdb -query | grep "background" | awk '{printf $2}' \
+		| cut -z -c 2-7 | tr -d '\000'
+else
+	xrdb -query | grep color${1} | awk '{printf $2}' \
+		| cut -z -c 2-7 | tr -d '\000'
+fi
