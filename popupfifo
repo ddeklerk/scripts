@@ -46,11 +46,11 @@ pad() {
 tail -f $POPUP_FIFO | while read -r message; do
 	case $message in
 		\[BL]*)
-			pop "BL  $(bar.sh ${message#*]}) $(pad ${message#*]}%)" $Bpid
+			pop "BL  $(progressbar ${message#*]}) $(pad ${message#*]}%)" $Bpid
 			Bpid=$!
 			;;
 		\[VL]*) # Volume message
-			pop "VOL $(bar.sh ${message#*]}) $(pad ${message#*]}%)" $Vpid
+			pop "VOL $(progressbar ${message#*]}) $(pad ${message#*]}%)" $Vpid
 			Vpid=$!
 			;;
 		\[WM]*)

@@ -42,8 +42,8 @@ shift $((OPTIND -1))
 
 # Echo the text for $d seconds and pipe into lemonbar to display the popup
 (echo " $text "; sleep $d) | lemonbar \
-	-B "#$(gtc.sh bg)" \
-	-F "#$(gtc.sh fg)" \
+	-B "#$(gtc bg)" \
+	-F "#$(gtc fg)" \
 	-d \
 	-f "$f:pixelsize=$s" \
 	-g ${w}x${h}+${x}+${y} \
