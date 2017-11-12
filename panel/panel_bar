@@ -1,0 +1,21 @@
+#!/bin/bash
+
+while read -r line; do
+	case $line in
+		C*)
+			clock="${line#?}"
+			;;
+		W*)
+			wm="${line#?}"
+			wm="${wm//0/□}"
+			wm="${wm//1/▣}"
+			wm="${wm//2/◆}"
+			wm="${wm//3/■}"
+			wm="$(echo -e $wm)"
+			;;
+		B*)
+			battery="${line#?}"
+			;;
+	esac
+	printf "%s\n" "%{l}${wm}%{c}%{r}${battery} ${clock}"
+done

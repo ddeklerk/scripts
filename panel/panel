@@ -1,0 +1,33 @@
+#!/bin/bash
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+# Check if the panel fifo already exists. If it does, remove it.
+[ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+mkfifo "$PANEL_FIFO"
+
+bg=$(gtc bg)
+fg=$(gtc fg)
+
+# Print the time (HH:MM:SS) every second
+while true; do
+	date "+C%H:%M:%S"
+	sleep 1
+done > "$PANEL_FIFO" &
+
+# Workspaces
+# TODO workspaces
+
+# Battery level
+if [[ $(acpi 2>/dev/null) ]]; then
+	while true; do
+		echo -e "B$(acpi -b | cut -d , -f 2 | cut -c 2-)"
+		sleep 5
+	done > "$PANEL_FIFO" &
+fi
+
+${BASH_SOURCE%/*}/panel_bar < "$PANEL_FIFO" | lemonbar \
+	-f "DejaVu Sans:size=8" \
+	-B "#$bg" \
+	-F "#$fg" \
+	| sh
