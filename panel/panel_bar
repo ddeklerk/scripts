@@ -1,17 +1,92 @@
 #!/bin/bash
 
+# Get the number of monitors
+num_mon=$(bspc query -M | wc -l)
+
+free=□
+occupied=▣
+urgent=◆
+focused=■
+
 while read -r line; do
 	case $line in
 		C*)
 			clock="${line#?}"
 			;;
 		W*)
-			wm="${line#?}"
-			wm="${wm//0/□}"
-			wm="${wm//1/▣}"
-			wm="${wm//2/◆}"
-			wm="${wm//3/■}"
-			wm="$(echo -e $wm)"
+			# bspwm's state
+			wm=
+			IFS=':'
+			set -- ${line#?}
+			while [ $# -gt 0 ] ; do
+				item=$1
+				name=${item#?}
+				case $item in
+					[mM]*)
+						case $item in
+							m*)
+								# monitor
+								on_focused_monitor=
+								;;
+							M*)
+								# focused monitor
+								on_focused_monitor=1
+								;;
+						esac
+						[ $num_mon -lt 2 ] && shift && continue
+						wm="${wm}%{A:bspc monitor -f ${name}:} ${name} %{A}"
+						;;
+					[fFoOuU]*)
+						case $item in
+							f*)
+								# free desktop
+								icon=$free
+								;;
+							F*)
+								if [ "$on_focused_monitor" ] ; then
+									# focused free desktop
+									icon=$focused
+								else
+									# active free desktop
+									icon=$free
+								fi
+								;;
+							o*)
+								# occupied desktop
+								icon=$occupied
+								;;
+							O*)
+								if [ "$on_focused_monitor" ] ; then
+									# focused occupied desktop
+									icon=$focused
+								else
+									# active occupied desktop
+									icon=$occupied
+								fi
+								;;
+							u*)
+								# urgent desktop
+								icon=$urgent
+								;;
+							U*)
+								if [ "$on_focused_monitor" ] ; then
+									# focused urgent desktop
+									icon=$focused
+								else
+									# active urgent desktop
+									icon=$urgent
+								fi
+								;;
+						esac
+						wm="${wm}%{A:bspc desktop -f ${name}:} ${icon} %{A}"
+						;;
+					[LTG]*)
+						# layout, state and flags
+						# wm="${wm} ${name} "
+						;;
+				esac
+				shift
+			done
 			;;
 		B*)
 			battery="${line#?}"
