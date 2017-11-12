@@ -8,17 +8,17 @@ if [ $? -ne 0 ]; then
 fi
 
 if [ ! -f "/tmp/barvisible" ]; then
-	barvisible=1
+	barvisible=true
 else
 	barvisible=$(cat /tmp/barvisible)
 fi
 
-if [ "$barvisible" == 1 ]; then
+if [ "$barvisible" = true ]; then
 	xdo hide -N "Bar"
 	bspc config top_padding 0
-	barvisible=0
+	barvisible=false
 else
 	xdo show -N "Bar"
-	barvisible=1
+	barvisible=true
 fi
 echo $barvisible > /tmp/barvisible
