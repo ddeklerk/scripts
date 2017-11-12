@@ -16,7 +16,7 @@ while true; do
 done > "$PANEL_FIFO" &
 
 # Workspaces
-# TODO workspaces
+bspc subscribe report > "$PANEL_FIFO" &
 
 # Battery level
 if [[ $(acpi 2>/dev/null) ]]; then
