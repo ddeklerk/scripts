@@ -19,12 +19,12 @@ done > "$PANEL_FIFO" &
 bspc subscribe report > "$PANEL_FIFO" &
 
 # Battery level
-if [[ $(acpi 2>/dev/null) ]]; then
-	while true; do
-		echo -e "B$(acpi -b | cut -d , -f 2 | cut -c 2-)"
-		sleep 5
-	done > "$PANEL_FIFO" &
-fi
+# if [[ $(acpi 2>/dev/null) ]]; then
+# 	while true; do
+# 		echo -e "B$(acpi -b | cut -d , -f 2 | cut -c 2-)"
+# 		sleep 5
+# 	done > "$PANEL_FIFO" &
+# fi
 
 ${BASH_SOURCE%/*}/panel_bar < "$PANEL_FIFO" | lemonbar \
 	-f "DejaVu Sans:size=8" \
