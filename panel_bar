@@ -3,6 +3,23 @@
 # Get the number of monitors
 num_mon=$(bspc query -M | wc -l)
 
+# ⊕
+# ⊖
+# ⊗
+# ⊘
+# ⊙
+# ⊚
+# ⊛
+# ⊜
+# ⊝
+# ⌾
+# ◉
+# ○
+# ◌
+# ◍
+# ◎
+# ●
+# ◯
 free=□
 occupied=▣
 urgent=◆
